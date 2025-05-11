@@ -38,6 +38,23 @@ class BrickflowBuiltInTaskVariables(Enum):
     task_key = "brickflow_task_key"
 
 
+class BrickflowBuiltInDynamicValueReferences(Enum):
+    # key is the {{ }} and value is the key
+    job_id = "brickflow_job_id_bis"
+    job_name = "brickflow_job_name"
+    job_run_id = "brickflow_job_run_id"
+    job_start_date = "brickflow_job_start_date"
+    job_start_time = "brickflow_job_start_time"
+    job_repair_count = "brickflow_job_repair_count"
+
+    task_name = "brickflow_task_name"
+    task_run_id = "brickflow_task_run_id"
+    task_execution_count = "brickflow_task_execution_count"
+
+    workspace_id = "brickflow_workspace_id"
+    workspace_url = "brickflow_workspace_url"
+
+
 class BrickflowInternalVariables(Enum):
     workflow_id = "brickflow_internal_workflow_name"
     task_id = "brickflow_internal_task_name"
@@ -47,7 +64,7 @@ class BrickflowInternalVariables(Enum):
     env = BrickflowEnvVars.BRICKFLOW_ENV.value.lower()
 
 
-def bind_variable(builtin: BrickflowBuiltInTaskVariables) -> Callable:
+def bind_variable(builtin: Union[BrickflowBuiltInTaskVariables, BrickflowBuiltInDynamicValueReferences]) -> Callable:
     def wrapper(f: Callable) -> Callable:
         @functools.wraps(f)
         def func(*args, **kwargs):  # type: ignore
@@ -259,14 +276,92 @@ class Context:
         self._ensure_valid_project(project)
         self._current_project = project
 
-    @bind_variable(BrickflowBuiltInTaskVariables.task_key)
-    def task_key(self, *, debug: Optional[str] = None) -> Any:
+    @bind_variable(BrickflowBuiltInDynamicValueReferences.job_name)
+    def job_name(self, *, debug: Optional[str] = None) -> Any:
         """
-        This function fetches the task_key value using the bind_variable decorator.
+        This function fetches the job_name value using the bind_variable decorator.
         The implementation is intentionally empty because the decorator handles the logic.
         """
         pass
 
+    @bind_variable(BrickflowBuiltInDynamicValueReferences.job_run_id)
+    def job_run_id(self, *, debug: Optional[str] = None) -> Any:
+        """
+        This function fetches the job_run_id value using the bind_variable decorator.
+        The implementation is intentionally empty because the decorator handles the logic.
+        """
+        pass
+
+    @bind_variable(BrickflowBuiltInDynamicValueReferences.job_repair_count)
+    def job_repair_count(self, *, debug: Optional[str] = None) -> Any:
+        """
+        This function fetches the job_repair_count value using the bind_variable decorator.
+        The implementation is intentionally empty because the decorator handles the logic.
+        """
+        pass
+
+    @bind_variable(BrickflowBuiltInDynamicValueReferences.job_start_date)
+    def job_start_date(self, *, debug: Optional[str] = None) -> Any:
+        """
+        This function fetches the job_start_date value (in ISO format) using the bind_variable decorator.
+        The implementation is intentionally empty because the decorator handles the logic.
+        """
+        pass
+
+    @bind_variable(BrickflowBuiltInDynamicValueReferences.job_start_time)
+    def job_start_time(self, *, debug: Optional[str] = None) -> Any:
+        """
+        This function fetches the job_start_time value (timestamp in milliseconds) using the bind_variable decorator.
+        The implementation is intentionally empty because the decorator handles the logic.
+        """
+        pass
+
+    @bind_variable(BrickflowBuiltInDynamicValueReferences.task_name)
+    def task_name(self, *, debug: Optional[str] = None) -> Any:
+        """
+        This function fetches the task_name value using the bind_variable decorator.
+        The implementation is intentionally empty because the decorator handles the logic.
+        """
+        pass
+
+    @bind_variable(BrickflowBuiltInDynamicValueReferences.task_run_id)
+    def task_run_id(self, *, debug: Optional[str] = None) -> Any:
+        """
+        This function fetches the task_run_id value using the bind_variable decorator.
+        The implementation is intentionally empty because the decorator handles the logic.
+        """
+        pass
+
+    @bind_variable(BrickflowBuiltInDynamicValueReferences.task_execution_count)
+    def task_execution_count(self, *, debug: Optional[str] = None) -> Any:
+        """
+        This function fetches the task_execution_count value using the bind_variable decorator.
+        The implementation is intentionally empty because the decorator handles the logic.
+        """
+        pass
+
+    @bind_variable(BrickflowBuiltInDynamicValueReferences.workspace_id)
+    def workspace_id(self, *, debug: Optional[str] = None) -> Any:
+        """
+        This function fetches the workspace_id value using the bind_variable decorator.
+        The implementation is intentionally empty because the decorator handles the logic.
+        """
+        pass
+
+    @bind_variable(BrickflowBuiltInDynamicValueReferences.workspace_url)
+    def workspace_url(self, *, debug: Optional[str] = None) -> Any:
+        """
+        This function fetches the workspace_url value using the bind_variable decorator.
+        The implementation is intentionally empty because the decorator handles the logic.
+        """
+        pass
+
+    @deprecated
+    def task_key(self, *, debug: Optional[str] = None) -> Any:
+        """Alias of task_name"""
+        return self.task_name(debug=debug)
+
+    @deprecated
     @bind_variable(BrickflowBuiltInTaskVariables.task_retry_count)
     def task_retry_count(self, *, debug: Optional[str] = None) -> Any:
         """
@@ -275,13 +370,12 @@ class Context:
         """
         pass
 
-    @bind_variable(BrickflowBuiltInTaskVariables.run_id)
+    @deprecated
     def run_id(self, *, debug: Optional[str] = None) -> Any:
         """
-        This function fetches the run_id value using the bind_variable decorator.
-        The implementation is intentionally empty because the decorator handles the logic.
+        Alias of task_run_id
         """
-        pass
+        return self.task_run_id(debug=debug)
 
     @bind_variable(BrickflowBuiltInTaskVariables.job_id)
     def job_id(self, *, debug: Optional[str] = None) -> Any:
@@ -291,14 +385,14 @@ class Context:
         """
         pass
 
-    @bind_variable(BrickflowBuiltInTaskVariables.parent_run_id)
+    @deprecated
     def parent_run_id(self, *, debug: Optional[str] = None) -> Any:
         """
-        This function fetches the parent_run_id value using the bind_variable decorator.
-        The implementation is intentionally empty because the decorator handles the logic.
+        Alias of job_run_id
         """
-        pass
+        return self.job_run_id(debug=debug)
 
+    @deprecated
     @bind_variable(BrickflowBuiltInTaskVariables.start_date)
     def start_date(self, *, debug: Optional[str] = None) -> Any:
         """
@@ -307,6 +401,7 @@ class Context:
         """
         pass
 
+    @deprecated
     @bind_variable(BrickflowBuiltInTaskVariables.start_time)
     def start_time(self, *, debug: Optional[str] = None) -> Any:
         """

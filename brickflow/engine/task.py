@@ -27,6 +27,7 @@ from typing import (
 )
 
 import pluggy
+from brickflow.context.context import BrickflowBuiltInDynamicValueReferences
 from decouple import config
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -974,8 +975,19 @@ class Task:
 
     @property
     def builtin_notebook_params(self) -> Dict[str, str]:
-        # 2 braces to escape for 1
-        return {i.value: f"{{{{{i.name}}}}}" for i in BrickflowBuiltInTaskVariables}
+        params = {}
+        for i in BrickflowBuiltInDynamicValueReferences:
+            param_key = i.value
+            param_value = i.name.replace('_', '.', 1)
+            if i == BrickflowBuiltInDynamicValueReferences.job_start_date:
+                param_value = "job.start_time.iso_date"
+            elif i == BrickflowBuiltInDynamicValueReferences.job_start_time:
+                param_value = "job.start_time.timestamp_ms"
+
+            # 2 braces to escape for 1
+            params.update({param_key: f"{{{{{param_value}}}}}"})
+
+        return params | {i.value: f"{{{{{i.name}}}}}" for i in BrickflowBuiltInTaskVariables}
 
     @property
     def name(self) -> str:
