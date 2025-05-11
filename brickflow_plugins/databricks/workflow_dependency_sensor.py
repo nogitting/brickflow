@@ -124,10 +124,10 @@ class WorkflowDependencySensor:
                 "or no value present"
             )
 
-        run = self._workspace_obj.jobs.get_run(run_id=run_id)
+        # run = self._workspace_obj.jobs.get_run(run_id=run_id)
 
         # Convert Unix timestamp in milliseconds to datetime object to easily incorporate the delta
-        start_time = datetime.fromtimestamp(run.start_time / 1000)
+        start_time = datetime.fromtimestamp(float(ctx.dbutils_widget_get_or_else("brickflow_start_time", None)) / 1000)
         execution_start_time = start_time - self.delta
 
         # Convert datetime object back to Unix timestamp in miliseconds
